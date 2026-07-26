@@ -1,0 +1,1 @@
+schtasks /Create /TN "Recall CLI Samstag Stop" /TR "taskkill /IM recall-cli.exe /F" /SC WEEKLY /D SAT /ST 17:00 /RU SYSTEM /RL HIGHEST /F
