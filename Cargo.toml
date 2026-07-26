@@ -1,0 +1,21 @@
+[package]
+name = "recall-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_Graphics_Gdi",
+    "Win32_UI_WindowsAndMessaging",
+    "Media_Ocr",
+] }
+image = "0.25"
+rusqlite = { version = "0.31", features = ["bundled"] }
+zstd = "0.13"
+clap = { version = "4", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+chrono = "0.4"
+dirs = "5"
+anyhow = "1"
+base64 = "0.22"
