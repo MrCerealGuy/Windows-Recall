@@ -3,7 +3,7 @@ use anyhow::Result;
 use std::time::Duration;
 use tokio::signal;
 
-pub async fn run(db: Database, interval_secs: u64) -> Result<()> {
+pub async fn run(db: Database, interval_secs: u64, cleanup_days: Option<u64>) -> Result<()> {
     let pid = std::process::id();
     let pid_path = dirs::home_dir()
         .unwrap_or_default()
@@ -12,13 +12,25 @@ pub async fn run(db: Database, interval_secs: u64) -> Result<()> {
     std::fs::write(&pid_path, pid.to_string())?;
 
     let mut interval = tokio::time::interval(Duration::from_secs(interval_secs));
+    let mut last_cleanup = chrono::Local::now();
 
     loop {
         tokio::select! {
             _ = interval.tick() => {
-                match capture_screen_once(&db) {
+                match capture_screen_once(&db).await {
                     Ok(id) => println!("[{}] Screenshot #{} gespeichert.", chrono::Local::now().format("%H:%M:%S"), id),
                     Err(e) => eprintln!("[{}] Fehler: {}", chrono::Local::now().format("%H:%M:%S"), e),
+                }
+
+                if let Some(days) = cleanup_days {
+                    if last_cleanup + chrono::Duration::hours(24) <= chrono::Local::now() {
+                        match db.cleanup(days) {
+                            Ok(n) if n > 0 => println!("[{}] Aufgeraeumt: {} alte Screenshots geloescht.", chrono::Local::now().format("%H:%M:%S"), n),
+                            Err(e) => eprintln!("[{}] Cleanup-Fehler: {}", chrono::Local::now().format("%H:%M:%S"), e),
+                            _ => {}
+                        }
+                        last_cleanup = chrono::Local::now();
+                    }
                 }
             }
             _ = signal::ctrl_c() => {
@@ -32,9 +44,9 @@ pub async fn run(db: Database, interval_secs: u64) -> Result<()> {
     Ok(())
 }
 
-fn capture_screen_once(db: &Database) -> Result<i64> {
+async fn capture_screen_once(db: &Database) -> Result<i64> {
     let data = capture::capture_screen()?;
-    let ocr_text = ocr::recognize(&data);
+    let ocr_text = ocr::recognize(&data)?;
     let id = db.save_screenshot(&data, &ocr_text)?;
     Ok(id)
 }

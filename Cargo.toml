@@ -8,7 +8,11 @@ windows = { version = "0.58", features = [
     "Win32_Foundation",
     "Win32_Graphics_Gdi",
     "Win32_UI_WindowsAndMessaging",
+    "Foundation",
+    "Graphics_Imaging",
     "Media_Ocr",
+    "Storage_Streams",
+    "Globalization",
 ] }
 image = "0.25"
 rusqlite = { version = "0.31", features = ["bundled"] }

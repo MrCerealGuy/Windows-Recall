@@ -23,6 +23,8 @@ enum Commands {
     Start {
         #[arg(short, long, default_value_t = 60)]
         interval: u64,
+        #[arg(long)]
+        cleanup_days: Option<u64>,
     },
     Stop,
     Snapshot,
@@ -51,6 +53,10 @@ enum Commands {
         output: PathBuf,
     },
     Stats,
+    Cleanup {
+        #[arg(short, long, default_value_t = 30)]
+        older_than: u64,
+    },
 }
 
 fn default_db_path() -> PathBuf {
@@ -70,10 +76,13 @@ async fn main() -> Result<()> {
     let db = storage::Database::open(&db_path)?;
 
     match cli.commands {
-        Commands::Start { interval } => {
+        Commands::Start { interval, cleanup_days } => {
             println!("Starte Recall mit Intervall {}s ...", interval);
+            if let Some(days) = cleanup_days {
+                println!("Automatisches Aufraeumen: screenshots aelter als {} Tage.", days);
+            }
             println!("Druecke Strg+C zum Beenden.");
-            scheduler::run(db, interval).await?;
+            scheduler::run(db, interval, cleanup_days).await?;
         }
         Commands::Stop => {
             println!("Recall-Dienst wird gestoppt.");
@@ -81,7 +90,7 @@ async fn main() -> Result<()> {
         }
         Commands::Snapshot => {
             let data = capture::capture_screen()?;
-            let ocr_text = ocr::recognize(&data);
+            let ocr_text = ocr::recognize(&data)?;
             let id = db.save_screenshot(&data, &ocr_text)?;
             println!("Screenshot #{} gespeichert.", id);
         }
@@ -140,6 +149,12 @@ async fn main() -> Result<()> {
             let screenshots = db.all_screenshots_for_export()?;
             let count = search::export_screenshots(&screenshots, &output, from.as_deref(), to.as_deref())?;
             println!("{} Screenshots nach {:?} exportiert.", count, output);
+        }
+        Commands::Cleanup { older_than } => {
+            let deleted = db.cleanup(older_than)?;
+            println!("{} Screenshots (aelter als {} Tage) geloescht.", deleted, older_than);
+            let stats = db.stats()?;
+            println!("Verbleibend: {} Screenshots ({:.2} MB)", stats.total_count, stats.total_size_bytes as f64 / 1_048_576.0);
         }
         Commands::Stats => {
             let stats = db.stats()?;

@@ -22,6 +22,7 @@ Die Binary befindet sich dann unter `target/release/recall-cli.exe`.
 | `recall-cli search <Begriff>` | OCR-Volltextsuche |
 | `recall-cli stats` | Statistiken anzeigen |
 | `recall-cli export [--from <Datum>] [--to <Datum>] [--output <Verzeichnis>]` | Screenshots exportieren |
+| `recall-cli cleanup [--older-than <Tage>]` | Alte Screenshots loeschen (Standard: 30 Tage) |
 
 ## Beispiele
 
@@ -43,6 +44,12 @@ recall-cli search "browser"
 
 # Alle Screenshots in einen Ordner exportieren
 recall-cli export --from "2026-07-01" --to "2026-07-31" --output ./exports
+
+# Screenshots aelter als 7 Tage loeschen
+recall-cli cleanup --older-than 7
+
+# Automatisches Aufraeumen beim Start (alle 30 Tage)
+recall-cli start --interval 60 --cleanup-days 30
 ```
 
 ## Technische Details
@@ -52,7 +59,7 @@ recall-cli export --from "2026-07-01" --to "2026-07-31" --output ./exports
 | Sprache | Rust (Edition 2021) |
 | Screenshot | Win32 GDI (`BitBlt`) |
 | Speicherung | SQLite + Zstd-Komprimierung |
-| OCR | Windows.Media.Ocr (stub) |
+| OCR | Windows.Media.Ocr |
 | CLI | clap (derive) |
 | Async | Tokio |
 | DB-Pfad | `~/.recall/recall.db` |
@@ -67,7 +74,7 @@ recall-cli/
 │   ├── capture.rs        # Screenshot-Erfassung (Win32 GDI)
 │   ├── storage.rs        # SQLite + Zstd-Komprimierung
 │   ├── scheduler.rs      # Intervall-basierte Erfassung
-│   ├── ocr.rs            # Texterkennung (stub)
+│   ├── ocr.rs            # Texterkennung (Windows.Media.Ocr)
 │   └── search.rs         # Export-Logik
 ```
 
@@ -77,6 +84,6 @@ recall-cli/
 - [x] SQLite-Speicherung mit Zstd-Komprimierung
 - [x] Periodische Erfassung (Scheduler)
 - [x] CLI mit list, search, show, export, stats
-- [ ] OCR-Integration (Windows.Media.Ocr)
+- [x] OCR-Integration (Windows.Media.Ocr)
 - [ ] Mehrere Monitore
-- [ ] Automatisches Aufräumen alter Einträge
+- [x] Automatisches Aufraeumen alter Eintraege

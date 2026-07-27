@@ -221,6 +221,20 @@ impl Database {
 
         Ok(rows)
     }
+
+    pub fn cleanup(&self, max_age_days: u64) -> Result<u64> {
+        let cutoff = (chrono::Utc::now() - chrono::Duration::days(max_age_days as i64))
+            .to_rfc3339();
+
+        let deleted = self.conn.execute(
+            "DELETE FROM screenshots WHERE timestamp < ?1",
+            params![cutoff],
+        )?;
+
+        self.conn.execute("VACUUM", [])?;
+
+        Ok(deleted as u64)
+    }
 }
 
 fn compress(data: &[u8]) -> Result<Vec<u8>> {
