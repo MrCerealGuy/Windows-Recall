@@ -1,1 +1,0 @@
-schtasks /Create /TN "Recall CLI Samstag" /TR "\"c:\Dev\Windows-Recall\recall-cli\target\debug\recall-cli.exe\" start --interval 30" /SC WEEKLY /D SAT /ST 09:00 /RU SYSTEM /RL HIGHEST /F

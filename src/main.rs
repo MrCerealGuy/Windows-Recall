@@ -57,6 +57,23 @@ enum Commands {
         #[arg(short, long, default_value_t = 30)]
         older_than: u64,
     },
+    Schedule {
+        #[arg(short, long, default_value = "SAT")]
+        day: String,
+        #[arg(short, long, default_value = "09:00")]
+        start: String,
+        #[arg(short, long, default_value = "17:00")]
+        end: String,
+        #[arg(short, long, default_value_t = 30)]
+        interval: u64,
+        #[arg(short, long, default_value = "Recall")]
+        name: String,
+    },
+    Unschedule {
+        #[arg(short, long, default_value = "Recall")]
+        name: String,
+    },
+    ScheduleList,
 }
 
 fn default_db_path() -> PathBuf {
@@ -166,6 +183,15 @@ async fn main() -> Result<()> {
             if let Some(last) = &stats.last_screenshot {
                 println!("Letzter Screenshot: {}", last);
             }
+        }
+        Commands::Schedule { day, start, end, interval, name } => {
+            scheduler::schedule_task(&name, &day, &start, &end, interval)?;
+        }
+        Commands::Unschedule { name } => {
+            scheduler::unschedule_task(&name)?;
+        }
+        Commands::ScheduleList => {
+            scheduler::list_tasks()?;
         }
     }
 

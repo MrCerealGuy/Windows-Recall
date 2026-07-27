@@ -23,6 +23,9 @@ Die Binary befindet sich dann unter `target/release/recall-cli.exe`.
 | `recall-cli stats` | Statistiken anzeigen |
 | `recall-cli export [--from <Datum>] [--to <Datum>] [--output <Verzeichnis>]` | Screenshots exportieren |
 | `recall-cli cleanup [--older-than <Tage>]` | Alte Screenshots loeschen (Standard: 30 Tage) |
+| `recall-cli schedule --day <Tag> --start <HH:MM> --end <HH:MM> [--interval <Sek>]` | Task im Windows Task Scheduler anlegen |
+| `recall-cli unschedule --name <Name>` | Task aus dem Task Scheduler entfernen |
+| `recall-cli schedule-list` | Alle Recall-Tasks im Task Scheduler anzeigen |
 
 ## Beispiele
 
@@ -50,6 +53,15 @@ recall-cli cleanup --older-than 7
 
 # Automatisches Aufraeumen beim Start (alle 30 Tage)
 recall-cli start --interval 60 --cleanup-days 30
+
+# Jeden Samstag von 09:00-17:00 alle 30s Screenshots erstellen
+recall-cli schedule --day SAT --start 09:00 --end 17:00 --interval 30 --name "Samstag"
+
+# Alle angelegten Tasks anzeigen
+recall-cli schedule-list
+
+# Task wieder entfernen
+recall-cli unschedule --name "Samstag"
 ```
 
 ## Technische Details
@@ -87,3 +99,4 @@ recall-cli/
 - [x] OCR-Integration (Windows.Media.Ocr)
 - [ ] Mehrere Monitore
 - [x] Automatisches Aufraeumen alter Eintraege
+- [x] Windows Task Scheduler Integration
