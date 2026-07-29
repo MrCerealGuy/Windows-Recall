@@ -1,0 +1,2 @@
+..\recall-cli list
+pause
