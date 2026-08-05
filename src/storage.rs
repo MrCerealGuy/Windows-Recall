@@ -231,6 +231,18 @@ impl Database {
             params![cutoff],
         )?;
 
+        let remaining: i64 = self.conn.query_row(
+            "SELECT COUNT(*) FROM screenshots",
+            [],
+            |r| r.get(0),
+        )?;
+
+        if remaining == 0 {
+            self.conn.execute_batch(
+                "DELETE FROM sqlite_sequence WHERE name = 'screenshots';",
+            )?;
+        }
+
         self.conn.execute("VACUUM", [])?;
 
         Ok(deleted as u64)

@@ -99,11 +99,29 @@ async fn main() -> Result<()> {
                 println!("Automatisches Aufraeumen: screenshots aelter als {} Tage.", days);
             }
             println!("Druecke Strg+C zum Beenden.");
-            scheduler::run(db, interval, cleanup_days).await?;
+            scheduler::run(db, &db_path, interval, cleanup_days).await?;
         }
         Commands::Stop => {
             println!("Recall-Dienst wird gestoppt.");
-            std::fs::remove_file(db_path.with_extension("pid"))?;
+            let pid_path = db_path.with_extension("pid");
+            if let Ok(content) = std::fs::read_to_string(&pid_path) {
+                if let Ok(pid) = content.trim().parse::<u32>() {
+                    println!("Beende Prozess mit PID {}", pid);
+                    let status = std::process::Command::new("taskkill")
+                        .args(["/F", "/PID", &pid.to_string()])
+                        .status();
+                    match status {
+                        Ok(s) if s.success() => println!("Prozess PID {} beendet.", pid),
+                        Ok(_) => println!("Warnung: taskkill fehlgeschlagen (Prozess evtl. nicht mehr aktiv)."),
+                        Err(e) => println!("Warnung: taskkill nicht ausfuehrbar: {}", e),
+                    }
+                } else {
+                    println!("Warnung: Ungueltige PID in {:?}.", pid_path);
+                }
+            } else {
+                println!("Warnung: Keine PID-Datei unter {:?} gefunden.", pid_path);
+            }
+            let _ = std::fs::remove_file(&pid_path);
         }
         Commands::Snapshot => {
             let data = capture::capture_screen()?;
@@ -127,7 +145,7 @@ async fn main() -> Result<()> {
                             std::fs::write(&out, png)?;
                             println!("  Gespeichert nach: {:?}", out);
                         } else {
-                            let path = format!("recall_{}.png", s.id);
+                            let path = format!("recall_{:04}.png", s.id);
                             std::fs::write(&path, png)?;
                             println!("  Gespeichert nach: {}", path);
                         }

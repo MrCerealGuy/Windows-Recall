@@ -21,7 +21,7 @@ Die Binary befindet sich dann unter `target/release/recall-cli.exe`.
 | `recall-cli show <ID> [--output <Pfad>]` | Screenshot-Details anzeigen oder exportieren |
 | `recall-cli search <Begriff>` | OCR-Volltextsuche |
 | `recall-cli stats` | Statistiken anzeigen |
-| `recall-cli export [--from <Datum>] [--to <Datum>] [--output <Verzeichnis>]` | Screenshots exportieren |
+| `recall-cli export [--from <Datum>] [--to <Datum>] [--output <Verzeichnis>]` | Screenshots + OCR-Timeline exportieren |
 | `recall-cli cleanup [--older-than <Tage>]` | Alte Screenshots loeschen (Standard: 30 Tage) |
 | `recall-cli schedule --day <Tag> --start <HH:MM> --end <HH:MM> [--interval <Sek>]` | Task im Windows Task Scheduler anlegen |
 | `recall-cli unschedule --name <Name>` | Task aus dem Task Scheduler entfernen |
@@ -45,7 +45,7 @@ recall-cli show 1 --output desktop.png
 # Nach Text suchen
 recall-cli search "browser"
 
-# Alle Screenshots in einen Ordner exportieren
+# Alle Screenshots in einen Ordner exportieren (inkl. Timeline)
 recall-cli export --from "2026-07-01" --to "2026-07-31" --output ./exports
 
 # Screenshots aelter als 7 Tage loeschen
@@ -63,6 +63,14 @@ recall-cli schedule-list
 # Task wieder entfernen
 recall-cli unschedule --name "Samstag"
 ```
+
+## Export-Timeline
+
+`recall-cli export` erzeugt neben den PNG-Dateien eine statische Webseite `index.html` im Ausgabeordner. Die Timeline zeigt alle Screenshots chronologisch mit OCR-Text, Vorschaubild und Zeitstempel.
+
+- Die Dateinamen sind mit führenden Nullen gepolstert (`recall_0001_...`), damit eine Sortierung nach Dateinamen chronologisch ist.
+- Lange OCR-Texte werden standardmäßig auf 3 Zeilen gekürzt und über den Button "Mehr ..." aufgeklappt.
+- Ein integrierter Suchfilter durchsucht alle OCR-Texte direkt im Browser (keine externen Abhängigkeiten).
 
 ## Technische Details
 
@@ -87,7 +95,7 @@ recall-cli/
 │   ├── storage.rs        # SQLite + Zstd-Komprimierung
 │   ├── scheduler.rs      # Intervall-basierte Erfassung
 │   ├── ocr.rs            # Texterkennung (Windows.Media.Ocr)
-│   └── search.rs         # Export-Logik
+│   └── search.rs         # Export-Logik + HTML-Timeline
 ```
 
 ## Entwicklungsstatus
@@ -97,6 +105,8 @@ recall-cli/
 - [x] Periodische Erfassung (Scheduler)
 - [x] CLI mit list, search, show, export, stats
 - [x] OCR-Integration (Windows.Media.Ocr)
-- [ ] Mehrere Monitore
-- [x] Automatisches Aufraeumen alter Eintraege
+- [x] Automatisches Aufraeumen alter Eintraege (mit Zaehler-Reset)
 - [x] Windows Task Scheduler Integration
+- [x] Export als statische HTML-Timeline mit OCR-Texten
+- [x] Zuverlaessiges Stoppen des Dienstes (beendet den Prozess per PID)
+- [ ] Mehrere Monitore
