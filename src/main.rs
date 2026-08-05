@@ -182,8 +182,10 @@ async fn main() -> Result<()> {
         }
         Commands::Export { from, to, output } => {
             let screenshots = db.all_screenshots_for_export()?;
-            let count = search::export_screenshots(&screenshots, &output, from.as_deref(), to.as_deref())?;
-            println!("{} Screenshots nach {:?} exportiert.", count, output);
+            let stamp = chrono::Local::now().format("%Y-%m-%d-%H%M%S").to_string();
+            let export_dir = output.join(&stamp);
+            let count = search::export_screenshots(&screenshots, &export_dir, from.as_deref(), to.as_deref())?;
+            println!("{} Screenshots nach {:?} exportiert.", count, export_dir);
         }
         Commands::Cleanup { older_than } => {
             let deleted = db.cleanup(older_than)?;

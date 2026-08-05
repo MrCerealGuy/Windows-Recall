@@ -49,7 +49,7 @@ recall-cli show 1 --output desktop.png
 # Nach Text suchen
 recall-cli search "browser"
 
-# Alle Screenshots in einen Ordner exportieren (inkl. Timeline)
+# Alle Screenshots in einen Ordner exportieren (inkl. Timeline, Unterordner je Export)
 recall-cli export --from "2026-07-01" --to "2026-07-31" --output ./exports
 
 # Screenshots aelter als 7 Tage loeschen
@@ -72,6 +72,7 @@ recall-cli unschedule --name "Samstag"
 
 `recall-cli export` erzeugt neben den PNG-Dateien eine statische Webseite `index.html` im Ausgabeordner. Die Timeline zeigt alle Screenshots chronologisch mit OCR-Text, Vorschaubild und Zeitstempel.
 
+- Jeder Export schreibt in einen neuen Zeitstempel-Unterordner (z.B. `exports/2026-08-05-0945/`), damit bereits vorhandene Dateien nie überschrieben werden und die Exporte eine Chronik bilden.
 - Die Dateinamen sind mit führenden Nullen gepolstert (`recall_0001_...`), damit eine Sortierung nach Dateinamen chronologisch ist.
 - Lange OCR-Texte werden standardmäßig auf 3 Zeilen gekürzt und über den Button "Mehr ..." aufgeklappt.
 - Ein integrierter Suchfilter durchsucht alle OCR-Texte direkt im Browser (keine externen Abhängigkeiten).
