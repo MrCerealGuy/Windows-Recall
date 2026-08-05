@@ -2,6 +2,10 @@
 
 Ein Windows-basiertes Screenshot-Archiv im Terminal-Stil, inspiriert von Microsoft Recall.
 
+## Haftungsausschluss
+
+Windows Recall darf nicht zu Spionagezwecken verwendet werden oder in irgendeiner Form gegen geltende Gesetze verstoßen. Das Tool ist ausschließlich für den persönlichen Gebrauch gedacht, um ein eigenes persönliches Archiv aufzubauen. Der Nutzer ist selbst für die Einhaltung aller geltenden Gesetze und Vorschriften verantwortlich.
+
 ## Installation
 
 ```bash
