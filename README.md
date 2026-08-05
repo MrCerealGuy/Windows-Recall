@@ -93,6 +93,7 @@ recall-cli unschedule --name "Samstag"
 ```
 recall-cli/
 ├── Cargo.toml
+├── examples/            # Beispiel-Skripte (Schedule, Export, List, Cleanup ...)
 ├── src/
 │   ├── main.rs           # CLI-Einstiegspunkt
 │   ├── capture.rs        # Screenshot-Erfassung (Win32 GDI)
