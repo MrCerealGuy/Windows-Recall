@@ -1,2 +1,2 @@
-..\recall-cli start --interval 30
+..\target\release\recall-cli.exe start --interval 30
 pause

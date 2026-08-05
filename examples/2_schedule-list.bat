@@ -1,2 +1,2 @@
-..\recall-cli schedule-list
+..\target\release\recall-cli.exe schedule-list
 pause

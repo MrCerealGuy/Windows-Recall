@@ -1,2 +1,2 @@
-..\recall-cli export --output ..\exports
+..\target\release\recall-cli.exe export --output ..\exports
 pause

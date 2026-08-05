@@ -1,2 +1,2 @@
-..\recall-cli cleanup --older-than 0
+..\target\release\recall-cli.exe cleanup --older-than 0
 pause

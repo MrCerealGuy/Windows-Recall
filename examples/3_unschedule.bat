@@ -1,2 +1,2 @@
-..\recall-cli unschedule --name "Samstag"
+..\target\release\recall-cli.exe unschedule --name "Samstag"
 pause
