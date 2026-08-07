@@ -1,10 +1,10 @@
 # recall-cli
 
-Ein Windows-basiertes Screenshot-Archiv im Terminal-Stil, inspiriert von Microsoft Recall.
+A Windows-based screenshot archive in terminal style, inspired by Microsoft Recall.
 
-## Haftungsausschluss
+## Disclaimer
 
-Windows Recall darf nicht zu Spionagezwecken verwendet werden oder in irgendeiner Form gegen geltende Gesetze verstoßen. Das Tool ist ausschließlich für den persönlichen Gebrauch gedacht, um ein eigenes persönliches Archiv aufzubauen. Der Nutzer ist selbst für die Einhaltung aller geltenden Gesetze und Vorschriften verantwortlich.
+Windows Recall must not be used for espionage purposes or in any way that violates applicable laws. The tool is intended exclusively for personal use to build up your own personal archive. The user is solely responsible for compliance with all applicable laws and regulations.
 
 ## Installation
 
@@ -12,107 +12,107 @@ Windows Recall darf nicht zu Spionagezwecken verwendet werden oder in irgendeine
 cargo build --release
 ```
 
-Die Binary befindet sich dann unter `target/release/recall-cli.exe`.
+The binary is located at `target/release/recall-cli.exe`.
 
-## Befehle
+## Commands
 
-| Befehl | Beschreibung |
-|--------|-------------|
-| `recall-cli snapshot` | Einzelnen Screenshot aufnehmen |
-| `recall-cli start --interval <Sekunden>` | Periodische Screenshots starten |
-| `recall-cli stop` | Erfassung beenden |
-| `recall-cli list [--date <Datum>] [--limit <N>]` | Screenshots auflisten |
-| `recall-cli show <ID> [--output <Pfad>]` | Screenshot-Details anzeigen oder exportieren |
-| `recall-cli search <Begriff>` | OCR-Volltextsuche |
-| `recall-cli stats` | Statistiken anzeigen |
-| `recall-cli export [--from <Datum>] [--to <Datum>] [--output <Verzeichnis>]` | Screenshots + OCR-Timeline exportieren |
-| `recall-cli cleanup [--older-than <Tage>]` | Alte Screenshots loeschen (Standard: 30 Tage) |
-| `recall-cli schedule --day <Tag> --start <HH:MM> --end <HH:MM> [--interval <Sek>]` | Task im Windows Task Scheduler anlegen |
-| `recall-cli unschedule --name <Name>` | Task aus dem Task Scheduler entfernen |
-| `recall-cli schedule-list` | Alle Recall-Tasks im Task Scheduler anzeigen |
+| Command | Description |
+|---------|-------------|
+| `recall-cli snapshot` | Take a single screenshot |
+| `recall-cli start --interval <seconds>` | Start periodic screenshot capture |
+| `recall-cli stop` | Stop capture |
+| `recall-cli list [--date <date>] [--limit <N>]` | List screenshots |
+| `recall-cli show <ID> [--output <path>]` | Show screenshot details or export |
+| `recall-cli search <term>` | OCR full-text search |
+| `recall-cli stats` | Show statistics |
+| `recall-cli export [--from <date>] [--to <date>] [--output <dir>]` | Export screenshots + OCR timeline |
+| `recall-cli cleanup [--older-than <days>]` | Delete old screenshots (default: 30 days) |
+| `recall-cli schedule --day <day> --start <HH:MM> --end <HH:MM> [--interval <sec>]` | Create a task in the Windows Task Scheduler |
+| `recall-cli unschedule --name <name>` | Remove a task from the Task Scheduler |
+| `recall-cli schedule-list` | Show all Recall tasks in the Task Scheduler |
 
-## Beispiele
+## Examples
 
 ```bash
-# Screenshot aufnehmen
+# Take a screenshot
 recall-cli snapshot
 
-# Alle 60 Sekunden Screenshots speichern
+# Save screenshots every 60 seconds
 recall-cli start --interval 60
 
-# Heutige Screenshots anzeigen
+# Show today's screenshots
 recall-cli list --date 2026-07-26
 
-# Screenshot als PNG exportieren
+# Export a screenshot as PNG
 recall-cli show 1 --output desktop.png
 
-# Nach Text suchen
+# Search for text
 recall-cli search "browser"
 
-# Alle Screenshots in einen Ordner exportieren (inkl. Timeline, Unterordner je Export)
+# Export all screenshots to a folder (incl. timeline, subfolder per export)
 recall-cli export --from "2026-07-01" --to "2026-07-31" --output ./exports
 
-# Screenshots aelter als 7 Tage loeschen
+# Delete screenshots older than 7 days
 recall-cli cleanup --older-than 7
 
-# Automatisches Aufraeumen beim Start (alle 30 Tage)
+# Automatic cleanup on start (every 30 days)
 recall-cli start --interval 60 --cleanup-days 30
 
-# Jeden Samstag von 09:00-17:00 alle 30s Screenshots erstellen
-recall-cli schedule --day SAT --start 09:00 --end 17:00 --interval 30 --name "Samstag"
+# Take screenshots every 30s every Saturday from 09:00-17:00
+recall-cli schedule --day SAT --start 09:00 --end 17:00 --interval 30 --name "Saturday"
 
-# Alle angelegten Tasks anzeigen
+# Show all created tasks
 recall-cli schedule-list
 
-# Task wieder entfernen
-recall-cli unschedule --name "Samstag"
+# Remove a task again
+recall-cli unschedule --name "Saturday"
 ```
 
-## Export-Timeline
+## Export Timeline
 
-`recall-cli export` erzeugt neben den PNG-Dateien eine statische Webseite `index.html` im Ausgabeordner. Die Timeline zeigt alle Screenshots chronologisch mit OCR-Text, Vorschaubild und Zeitstempel.
+`recall-cli export` creates a static website `index.html` in the output folder in addition to the PNG files. The timeline shows all screenshots chronologically with OCR text, preview image and timestamp.
 
-- Jeder Export schreibt in einen neuen Zeitstempel-Unterordner (z.B. `exports/2026-08-05-0945/`), damit bereits vorhandene Dateien nie überschrieben werden und die Exporte eine Chronik bilden.
-- Die Dateinamen sind mit führenden Nullen gepolstert (`recall_0001_...`), damit eine Sortierung nach Dateinamen chronologisch ist.
-- Lange OCR-Texte werden standardmäßig auf 3 Zeilen gekürzt und über den Button "Mehr ..." aufgeklappt.
-- Ein integrierter Suchfilter durchsucht alle OCR-Texte direkt im Browser (keine externen Abhängigkeiten).
+- Each export writes to a new timestamp subfolder (e.g. `exports/2026-08-05-0945/`) so existing files are never overwritten and exports form an archive history.
+- Filenames are zero-padded (`recall_0001_...`) so sorting by filename is chronological.
+- Long OCR texts are truncated to 3 lines by default and can be expanded via the "More ..." button.
+- An integrated search filter searches all OCR texts directly in the browser (no external dependencies).
 
-## Technische Details
+## Technical Details
 
-| Komponente | Technologie |
-|------------|-------------|
-| Sprache | Rust (Edition 2021) |
+| Component | Technology |
+|-----------|------------|
+| Language | Rust (Edition 2021) |
 | Screenshot | Win32 GDI (`BitBlt`) |
-| Speicherung | SQLite + Zstd-Komprimierung |
+| Storage | SQLite + Zstd compression |
 | OCR | Windows.Media.Ocr |
 | CLI | clap (derive) |
 | Async | Tokio |
-| DB-Pfad | `~/.recall/recall.db` |
+| DB path | `~/.recall/recall.db` |
 
-## Projektstruktur
+## Project Structure
 
 ```
 recall-cli/
 ├── Cargo.toml
-├── examples/            # Beispiel-Skripte (Schedule, Export, List, Cleanup ...)
+├── examples/            # Example scripts (schedule, export, list, cleanup ...)
 ├── src/
-│   ├── main.rs           # CLI-Einstiegspunkt
-│   ├── capture.rs        # Screenshot-Erfassung (Win32 GDI)
-│   ├── storage.rs        # SQLite + Zstd-Komprimierung
-│   ├── scheduler.rs      # Intervall-basierte Erfassung
-│   ├── ocr.rs            # Texterkennung (Windows.Media.Ocr)
-│   └── search.rs         # Export-Logik + HTML-Timeline
+│   ├── main.rs           # CLI entry point
+│   ├── capture.rs        # Screenshot capture (Win32 GDI)
+│   ├── storage.rs        # SQLite + Zstd compression
+│   ├── scheduler.rs      # Interval-based capture
+│   ├── ocr.rs            # Text recognition (Windows.Media.Ocr)
+│   └── search.rs         # Export logic + HTML timeline
 ```
 
-## Entwicklungsstatus
+## Development Status
 
-- [x] Screenshot-Erfassung
-- [x] SQLite-Speicherung mit Zstd-Komprimierung
-- [x] Periodische Erfassung (Scheduler)
-- [x] CLI mit list, search, show, export, stats
-- [x] OCR-Integration (Windows.Media.Ocr)
-- [x] Automatisches Aufraeumen alter Eintraege (mit Zaehler-Reset)
-- [x] Windows Task Scheduler Integration
-- [x] Export als statische HTML-Timeline mit OCR-Texten
-- [x] Zuverlaessiges Stoppen des Dienstes (beendet den Prozess per PID)
-- [ ] Mehrere Monitore
+- [x] Screenshot capture
+- [x] SQLite storage with Zstd compression
+- [x] Periodic capture (scheduler)
+- [x] CLI with list, search, show, export, stats
+- [x] OCR integration (Windows.Media.Ocr)
+- [x] Automatic cleanup of old entries (with counter reset)
+- [x] Windows Task Scheduler integration
+- [x] Export as static HTML timeline with OCR texts
+- [x] Reliable service shutdown (terminates the process via PID)
+- [ ] Multiple monitors
